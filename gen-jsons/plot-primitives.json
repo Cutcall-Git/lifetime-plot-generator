@@ -1,0 +1,99 @@
+{
+  "protagonist": {
+    "sex": "female",
+    "age": [
+      {
+        "min": 45,
+        "max": 49
+      },
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      {
+        "min": 60,
+        "max": 62
+      },
+      {
+        "min": 63,
+        "max": 65
+      },
+      {
+        "min": 66,
+        "max": 69
+      },
+      {
+        "min": 70,
+        "max": 75
+      }
+    ]
+  },
+  "season": [
+    "christmas",
+    "holidays",
+    "new_years",
+    "thanksgiving",
+    "winter",
+    "autumn",
+    "spring",
+    "summer"
+  ],
+  "relationship": [
+    "divorced",
+    "separated",
+    "widowed",
+    "never_married",
+    "currently_unhappy"
+  ],
+  "male_counterpart": {
+    "age_adjusters": {
+      "45-49": [
+        "older",
+        "peer",
+        "peer",
+        "younger",
+        "younger"
+      ],
+      "50-59": [
+        "older",
+        "peer",
+        "peer",
+        "younger",
+        "younger",
+        "notably_younger"
+      ],
+      "60-75": [
+        "older",
+        "peer",
+        "younger",
+        "younger",
+        "notably_younger",
+        "notably_younger"
+      ]
+    },
+    "age_offsets": {
+      "older": {
+        "min": 1,
+        "max": 5
+      },
+      "peer": {
+        "min": -2,
+        "max": 2
+      },
+      "younger": {
+        "min": -9,
+        "max": -3
+      },
+      "notably_younger": {
+        "min": -15,
+        "max": -10
+      }
+    }
+  }
+}
