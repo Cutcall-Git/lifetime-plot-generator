@@ -15,7 +15,8 @@ function readJson(fileName) {
 const jsonFiles = {
   "gen-jsons/plot-primitives.json": readJson("plot-primitives.json"),
   "gen-jsons/secondary-characters.json": readJson("secondary-characters.json"),
-  "gen-jsons/location-primitives.json": readJson("location-primitives.json")
+  "gen-jsons/location-primitives.json": readJson("location-primitives.json"),
+  "gen-jsons/settings.json": readJson("settings.json")
 };
 
 let generateMovie;
@@ -60,6 +61,9 @@ const counts = {
   friendOrientation: new Map(),
   locationTrajectory: new Map(),
   locationPrimitive: new Map(),
+  setting: new Map(),
+  settingByPrimitive: new Map(),
+  settingTrajectory: new Map(),
   horseCount: new Map(),
   retrieverCount: new Map(),
   horseLocations: new Map(),
@@ -104,18 +108,12 @@ function countSecondaries(secondaries, target) {
   }
 }
 
-function parseLocations(line) {
-  const text = line.replace("Location trajectory: ", "");
-  const locations = text.split(" → ").map(part => {
+function parsePath(line, prefix, valueName) {
+  return line.replace(prefix, "").split(" → ").map(part => {
     const match = part.match(/^([ABC]): (.+)$/);
-    if (!match) throw new Error(`Unexpected location output: ${part}`);
-    return { label: match[1], primitive: match[2] };
+    if (!match) throw new Error(`Unexpected ${valueName} output: ${part}`);
+    return { label: match[1], [valueName]: match[2] };
   });
-
-  return {
-    trajectory: locations.map(location => location.label).join("-"),
-    locations
-  };
 }
 
 function countPlot(plot) {
@@ -126,9 +124,10 @@ function countPlot(plot) {
   const responsibilityLine = lines.find(line => line.startsWith("His responsibility:"));
   const seasonLine = lines.find(line => line.startsWith("Season:"));
   const locationLine = lines.find(line => line.startsWith("Location trajectory:"));
+  const settingLine = lines.find(line => line.startsWith("Settings:"));
   const maleCounterpart = maleLine?.match(/^Male counterpart: (\d+), ([^,]+), (.+)$/);
 
-  if (!protagonist || !maleCounterpart || !responsibilityLine || !seasonLine || !locationLine) {
+  if (!protagonist || !maleCounterpart || !responsibilityLine || !seasonLine || !locationLine || !settingLine) {
     throw new Error(`Unexpected plot output:\n${plot}`);
   }
 
@@ -153,23 +152,35 @@ function countPlot(plot) {
     }
   }
 
-  const location = parseLocations(locationLine);
-  addCount(counts.locationTrajectory, location.trajectory);
+  const locations = parsePath(locationLine, "Location trajectory: ", "primitive");
+  const settings = parsePath(settingLine, "Settings: ", "setting");
+  const trajectory = locations.map(location => location.label).join("-");
+  addCount(counts.locationTrajectory, trajectory);
 
   const uniqueLocations = new Map();
-  for (const item of location.locations) {
-    uniqueLocations.set(item.label, item.primitive);
-  }
-  for (const primitive of uniqueLocations.values()) {
+  const uniqueSettings = new Map();
+
+  for (const item of locations) uniqueLocations.set(item.label, item.primitive);
+  for (const item of settings) uniqueSettings.set(item.label, item.setting);
+
+  for (const [label, primitive] of uniqueLocations) {
+    const setting = uniqueSettings.get(label);
     addCount(counts.locationPrimitive, primitive);
+    addCount(counts.setting, setting);
+    addCount(counts.settingByPrimitive, `${primitive}: ${setting}`);
   }
+
+  addCount(
+    counts.settingTrajectory,
+    settings.map(item => item.setting).join(" → ")
+  );
 
   const horseCount = (protagonistSecondaries.horse || 0) + (maleSecondaries.horse || 0);
   const retrieverCount = (protagonistSecondaries.retriever || 0) + (maleSecondaries.retriever || 0);
   addCount(counts.horseCount, String(horseCount));
   addCount(counts.retrieverCount, String(retrieverCount));
 
-  const primitivePath = location.locations.map(item => item.primitive).join(" → ");
+  const primitivePath = locations.map(item => item.primitive).join(" → ");
   if (horseCount) addCount(counts.horseLocations, `${horseCount} horse: ${primitivePath}`);
   if (retrieverCount) addCount(counts.retrieverLocations, `${retrieverCount} retriever: ${primitivePath}`);
 }
@@ -202,6 +213,9 @@ async function run() {
     formatCounts("Friend orientation", counts.friendOrientation),
     formatCounts("Location trajectories", counts.locationTrajectory),
     formatCounts("Unique location primitives", counts.locationPrimitive),
+    formatCounts("Settings", counts.setting),
+    formatCounts("Settings by location primitive", counts.settingByPrimitive),
+    formatCounts("Setting trajectories", counts.settingTrajectory),
     formatCounts("Movie horse counts", counts.horseCount),
     formatCounts("Movie retriever counts", counts.retrieverCount),
     "",
