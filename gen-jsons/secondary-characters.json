@@ -13,8 +13,9 @@
       "child",
       "living_parent",
       "living_grandparent",
+      "grandchild",
       "sibling",
-      "coworker",
+      "friend",
       "horse",
       "retriever"
     ],
@@ -34,11 +35,14 @@
       "living_grandparent": [
         1
       ],
+      "grandchild": [
+        1
+      ],
       "sibling": [
         2,
         1
       ],
-      "coworker": [
+      "friend": [
         2,
         1
       ],
@@ -50,6 +54,38 @@
       ],
       "retriever": [
         1
+      ]
+    }
+  },
+  "friend": {
+    "roles": [
+      "best_friend",
+      "college_friend",
+      "coworker",
+      "business_partner"
+    ],
+    "sex": [
+      "male",
+      "female",
+      "female"
+    ],
+    "orientation": {
+      "male": [
+        "gay",
+        "straight",
+        "straight"
+      ],
+      "female": [
+        "gay",
+        "straight",
+        "straight",
+        "straight",
+        "straight",
+        "straight",
+        "straight",
+        "straight",
+        "straight",
+        "straight"
       ]
     }
   },
