@@ -1,0 +1,77 @@
+{
+  "protagonist": {
+    "population": [
+      1,
+      2,
+      2,
+      3,
+      3,
+      4,
+      5
+    ],
+    "characters": [
+      "child",
+      "living_parent",
+      "living_grandparent",
+      "sibling",
+      "coworker",
+      "horse",
+      "retriever"
+    ],
+    "gravity": {
+      "child": [
+        5,
+        3,
+        2,
+        1,
+        1,
+        1
+      ],
+      "living_parent": [
+        3,
+        1
+      ],
+      "living_grandparent": [
+        1
+      ],
+      "sibling": [
+        2,
+        1
+      ],
+      "coworker": [
+        2,
+        1
+      ],
+      "horse": [
+        3,
+        2,
+        1,
+        1
+      ],
+      "retriever": [
+        1
+      ]
+    }
+  },
+  "male_counterpart": {
+    "population": [
+      1
+    ],
+    "characters": [
+      "child",
+      "living_parent",
+      "horse"
+    ],
+    "gravity": {
+      "child": [
+        3
+      ],
+      "living_parent": [
+        2
+      ],
+      "horse": [
+        2
+      ]
+    }
+  }
+}
