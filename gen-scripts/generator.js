@@ -104,6 +104,18 @@ function generateLocations(schema, trajectory, animalCounts) {
   return locations;
 }
 
+function generateSettings(schema, locations) {
+  return Object.fromEntries(
+    Object.entries(locations).map(([label, primitive]) => {
+      const pool = Object.entries(schema.settings)
+        .filter(([, setting]) => setting.locations.includes(primitive))
+        .map(([name]) => name);
+
+      return [label, pick(pool)];
+    })
+  );
+}
+
 function describeSecondaries(counts) {
   return Object.entries(counts)
     .filter(([, count]) => count)
@@ -124,11 +136,19 @@ function describeLocations(trajectory, locations) {
     .join(" → ");
 }
 
+function describeSettings(trajectory, settings) {
+  return trajectory
+    .split("-")
+    .map(label => `${label}: ${settings[label].replaceAll("_", " ")}`)
+    .join(" → ");
+}
+
 async function generateMovie() {
-  const [primitives, secondary, location] = await Promise.all([
+  const [primitives, secondary, location, setting] = await Promise.all([
     fetch("gen-jsons/plot-primitives.json").then(response => response.json()),
     fetch("gen-jsons/secondary-characters.json").then(response => response.json()),
-    fetch("gen-jsons/location-primitives.json").then(response => response.json())
+    fetch("gen-jsons/location-primitives.json").then(response => response.json()),
+    fetch("gen-jsons/settings.json").then(response => response.json())
   ]);
 
   const protagonistAge = resolve(pick(primitives.protagonist.age));
@@ -153,6 +173,7 @@ async function generateMovie() {
 
   const trajectory = pick(location.trajectory);
   const locations = generateLocations(location, trajectory, animalCounts);
+  const settings = generateSettings(setting, locations);
 
   movie.innerHTML = `
     <p><strong>Protagonist:</strong> female, ${protagonistAge}, ${protagonistRelationship.replaceAll("_", " ")}</p>
@@ -162,6 +183,7 @@ async function generateMovie() {
     <p><strong>His responsibility:</strong> ${describeSecondaries(maleSecondaries)}</p>
     <p><strong>Season:</strong> ${season.replaceAll("_", " ")}</p>
     <p><strong>Location trajectory:</strong> ${describeLocations(trajectory, locations)}</p>
+    <p><strong>Settings:</strong> ${describeSettings(trajectory, settings)}</p>
   `;
 }
 
