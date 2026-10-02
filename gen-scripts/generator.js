@@ -36,9 +36,15 @@ function generateSecondaries(schema, representation = {}) {
   const counts = Object.fromEntries(schema.characters.map(type => [type, 0]));
 
   for (let population = 0; population < target; population++) {
-    const pool = buildPool(schema.characters, schema.gravity, counts, representation);
-    if (!pool.length) break;
-    counts[pick(pool)]++;
+    const pool = buildPool(schema.characters, schema.gravity, counts);
+    if (schema.age_representation) {
+      const representedPool = buildPool(schema.characters, schema.gravity, counts, representation);
+      if (!representedPool.length) break;
+      counts[pick(representedPool)]++;
+    } else {
+      if (!pool.length) break;
+      counts[pick(pool)]++;
+    }
   }
 
   return counts;
@@ -51,6 +57,51 @@ function generateFriends(count, schema) {
     const orientation = pick(schema.orientation[sex]);
     return { role, sex, orientation };
   });
+}
+
+function locationLabels(trajectory) {
+  return [...new Set(trajectory.split("-"))];
+}
+
+function buildLocationPool(schema, animalCounts, allowed = null) {
+  return Object.entries(schema.primitives).flatMap(([primitive, base]) => {
+    if (allowed && !allowed.includes(primitive)) return [];
+
+    const adjustment = Object.entries(animalCounts).reduce((total, [animal, count]) => {
+      return total + (schema.adjustments[animal]?.[primitive] ?? 0) * count;
+    }, 0);
+
+    return Array(base + adjustment).fill(primitive);
+  });
+}
+
+function outstandingRequirements(schema, animalCounts, locations) {
+  return Object.entries(animalCounts)
+    .filter(([animal, count]) => count > 0 && schema.requirements[animal])
+    .map(([animal]) => schema.requirements[animal])
+    .filter(valid => !Object.values(locations).some(location => valid.includes(location)));
+}
+
+function generateLocations(schema, trajectory, animalCounts) {
+  const labels = locationLabels(trajectory);
+  const locations = {};
+
+  labels.forEach((label, index) => {
+    const remaining = labels.length - index;
+    const outstanding = outstandingRequirements(schema, animalCounts, locations);
+
+    let allowed = null;
+    if (remaining === 1 && outstanding.length) {
+      allowed = outstanding.reduce(
+        (valid, requirement) => valid.filter(location => requirement.includes(location)),
+        Object.keys(schema.primitives)
+      );
+    }
+
+    locations[label] = pick(buildLocationPool(schema, animalCounts, allowed));
+  });
+
+  return locations;
 }
 
 function describeSecondaries(counts) {
@@ -66,10 +117,18 @@ function describeFriends(friends) {
     .join(", ");
 }
 
+function describeLocations(trajectory, locations) {
+  return trajectory
+    .split("-")
+    .map(label => `${label}: ${locations[label].replaceAll("_", " ")}`)
+    .join(" → ");
+}
+
 async function generateMovie() {
-  const [primitives, secondary] = await Promise.all([
+  const [primitives, secondary, location] = await Promise.all([
     fetch("gen-jsons/plot-primitives.json").then(response => response.json()),
-    fetch("gen-jsons/secondary-characters.json").then(response => response.json())
+    fetch("gen-jsons/secondary-characters.json").then(response => response.json()),
+    fetch("gen-jsons/location-primitives.json").then(response => response.json())
   ]);
 
   const protagonistAge = resolve(pick(primitives.protagonist.age));
@@ -87,6 +146,14 @@ async function generateMovie() {
   const friends = generateFriends(protagonistSecondaries.friend, secondary.friend);
   const maleSecondaries = generateSecondaries(secondary.male_counterpart);
 
+  const animalCounts = {
+    horse: protagonistSecondaries.horse + maleSecondaries.horse,
+    retriever: protagonistSecondaries.retriever + (maleSecondaries.retriever ?? 0)
+  };
+
+  const trajectory = pick(location.trajectory);
+  const locations = generateLocations(location, trajectory, animalCounts);
+
   movie.innerHTML = `
     <p><strong>Protagonist:</strong> female, ${protagonistAge}, ${protagonistRelationship.replaceAll("_", " ")}</p>
     <p><strong>Her people:</strong> ${describeSecondaries(protagonistSecondaries)}</p>
@@ -94,6 +161,7 @@ async function generateMovie() {
     <p><strong>Male counterpart:</strong> ${maleAge}, ${relation.replaceAll("_", " ")}, ${maleRelationship.replaceAll("_", " ")}</p>
     <p><strong>His responsibility:</strong> ${describeSecondaries(maleSecondaries)}</p>
     <p><strong>Season:</strong> ${season.replaceAll("_", " ")}</p>
+    <p><strong>Location trajectory:</strong> ${describeLocations(trajectory, locations)}</p>
   `;
 }
 
