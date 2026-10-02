@@ -14,21 +14,29 @@ function ageBand(age) {
   return "60-75";
 }
 
-function buildPool(characters, gravity, counts) {
+function secondaryAgeBand(age) {
+  if (age < 50) return "45-49";
+  if (age < 60) return "50-59";
+  if (age < 70) return "60-69";
+  return "70-75";
+}
+
+function buildPool(characters, gravity, counts, representation = {}) {
   return characters.flatMap(type => {
     const weights = gravity[type];
     const count = counts[type] ?? 0;
     const copies = weights[count] ?? 0;
-    return Array(copies).fill(type);
+    const represented = representation[type] ?? 1;
+    return Array(copies * represented).fill(type);
   });
 }
 
-function generateSecondaries(schema) {
+function generateSecondaries(schema, representation = {}) {
   const target = pick(schema.population);
   const counts = Object.fromEntries(schema.characters.map(type => [type, 0]));
 
   for (let population = 0; population < target; population++) {
-    const pool = buildPool(schema.characters, schema.gravity, counts);
+    const pool = buildPool(schema.characters, schema.gravity, counts, representation);
     if (!pool.length) break;
     counts[pick(pool)]++;
   }
@@ -72,7 +80,10 @@ async function generateMovie() {
   const maleAge = protagonistAge + resolve(primitives.male_counterpart.age_offsets[relation]);
   const maleRelationship = pick(primitives.relationship);
 
-  const protagonistSecondaries = generateSecondaries(secondary.protagonist);
+  const protagonistAgeRepresentation =
+    secondary.protagonist.age_representation[secondaryAgeBand(protagonistAge)];
+  const protagonistSecondaries =
+    generateSecondaries(secondary.protagonist, protagonistAgeRepresentation);
   const friends = generateFriends(protagonistSecondaries.friend, secondary.friend);
   const maleSecondaries = generateSecondaries(secondary.male_counterpart);
 
