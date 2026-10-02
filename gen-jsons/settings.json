@@ -1,0 +1,79 @@
+{
+  "settings": {
+    "apartment": { "locations": ["urban", "suburban"] },
+    "condo": { "locations": ["urban", "suburban", "small_town"] },
+    "townhouse": { "locations": ["urban", "suburban", "small_town"] },
+    "house": { "locations": ["urban", "suburban", "small_town", "rural"] },
+    "family_home": { "locations": ["urban", "suburban", "small_town", "rural"] },
+    "estate": { "locations": ["suburban", "small_town", "rural", "remote"] },
+    "historic_home": { "locations": ["urban", "suburban", "small_town", "rural"] },
+    "cottage": { "locations": ["suburban", "small_town", "rural", "remote"] },
+    "lake_house": { "locations": ["small_town", "rural", "remote"] },
+    "beach_house": { "locations": ["suburban", "small_town", "rural", "remote"] },
+    "mountain_house": { "locations": ["small_town", "rural", "remote"] },
+    "cabin": { "locations": ["rural", "remote"] },
+
+    "hotel": { "locations": ["urban", "suburban", "small_town"] },
+    "boutique_hotel": { "locations": ["urban", "small_town"] },
+    "inn": { "locations": ["small_town", "rural", "remote"] },
+    "bed_and_breakfast": { "locations": ["small_town", "rural"] },
+    "resort": { "locations": ["suburban", "small_town", "rural", "remote"] },
+    "mountain_lodge": { "locations": ["rural", "remote"] },
+    "lake_lodge": { "locations": ["rural", "remote"] },
+
+    "farm": { "locations": ["rural"] },
+    "family_farm": { "locations": ["rural"] },
+    "ranch": { "locations": ["rural", "remote"] },
+    "horse_property": { "locations": ["rural", "remote"] },
+    "vineyard": { "locations": ["rural"] },
+    "winery": { "locations": ["small_town", "rural"] },
+    "orchard": { "locations": ["rural"] },
+    "tree_farm": { "locations": ["rural"] },
+
+    "bakery": { "locations": ["urban", "suburban", "small_town"] },
+    "cafe": { "locations": ["urban", "suburban", "small_town"] },
+    "restaurant": { "locations": ["urban", "suburban", "small_town"] },
+    "bookstore": { "locations": ["urban", "suburban", "small_town"] },
+    "flower_shop": { "locations": ["urban", "suburban", "small_town"] },
+    "antique_shop": { "locations": ["urban", "suburban", "small_town"] },
+    "gift_shop": { "locations": ["suburban", "small_town"] },
+    "general_store": { "locations": ["small_town", "rural"] },
+    "family_business": { "locations": ["urban", "suburban", "small_town", "rural"] },
+
+    "art_gallery": { "locations": ["urban", "suburban", "small_town"] },
+    "art_studio": { "locations": ["urban", "suburban", "small_town", "rural"] },
+    "photography_studio": { "locations": ["urban", "suburban", "small_town"] },
+    "design_studio": { "locations": ["urban", "suburban", "small_town"] },
+
+    "event_venue": { "locations": ["urban", "suburban", "small_town", "rural"] },
+    "wedding_venue": { "locations": ["suburban", "small_town", "rural", "remote"] },
+    "historic_inn": { "locations": ["small_town", "rural"] },
+    "country_club": { "locations": ["suburban", "small_town"] },
+
+    "campground": { "locations": ["rural", "remote"] },
+    "summer_camp": { "locations": ["rural", "remote"] },
+    "retreat": { "locations": ["rural", "remote"] },
+    "spa_resort": { "locations": ["suburban", "small_town", "rural", "remote"] },
+
+    "marina": { "locations": ["suburban", "small_town", "rural"] },
+    "houseboat": { "locations": ["urban", "suburban", "small_town", "rural"] },
+
+    "ski_lodge": { "locations": ["small_town", "rural", "remote"] },
+    "mountain_resort": { "locations": ["small_town", "rural", "remote"] },
+
+    "community_theater": { "locations": ["urban", "suburban", "small_town"] },
+    "local_newspaper": { "locations": ["urban", "suburban", "small_town"] },
+    "radio_station": { "locations": ["urban", "suburban", "small_town", "rural"] },
+
+    "veterinary_clinic": { "locations": ["urban", "suburban", "small_town", "rural"] },
+    "animal_rescue": { "locations": ["suburban", "small_town", "rural"] },
+    "horse_rescue": { "locations": ["rural", "remote"] },
+    "stable": { "locations": ["suburban", "small_town", "rural"] },
+
+    "family_cabin": { "locations": ["rural", "remote"] },
+    "family_lake_house": { "locations": ["small_town", "rural", "remote"] },
+    "family_ranch": { "locations": ["rural", "remote"] },
+    "family_inn": { "locations": ["small_town", "rural"] },
+    "family_vineyard": { "locations": ["rural"] }
+  }
+}
