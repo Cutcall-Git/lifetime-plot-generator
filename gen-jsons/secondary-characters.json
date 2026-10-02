@@ -55,6 +55,28 @@
       "retriever": [
         1
       ]
+    },
+    "age_representation": {
+      "45-49": {
+        "living_parent": 3,
+        "living_grandparent": 1,
+        "grandchild": 0
+      },
+      "50-59": {
+        "living_parent": 3,
+        "living_grandparent": 1,
+        "grandchild": 1
+      },
+      "60-69": {
+        "living_parent": 2,
+        "living_grandparent": 0,
+        "grandchild": 2
+      },
+      "70-75": {
+        "living_parent": 1,
+        "living_grandparent": 0,
+        "grandchild": 3
+      }
     }
   },
   "friend": {
