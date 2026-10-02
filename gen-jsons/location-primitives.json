@@ -1,0 +1,38 @@
+{
+  "trajectory": [
+    "A-A",
+    "A-A",
+    "A-A",
+    "A-A",
+    "A-B",
+    "A-B",
+    "A-B",
+    "A-B-A",
+    "A-B-A",
+    "A-B-C"
+  ],
+  "primitives": {
+    "urban": 3,
+    "suburban": 3,
+    "small_town": 3,
+    "rural": 3,
+    "remote": 2
+  },
+  "requirements": {
+    "horse": ["small_town", "rural", "remote"],
+    "retriever": ["suburban", "small_town", "rural", "remote"]
+  },
+  "adjustments": {
+    "horse": {
+      "small_town": 2,
+      "rural": 4,
+      "remote": 3
+    },
+    "retriever": {
+      "suburban": 2,
+      "small_town": 2,
+      "rural": 1,
+      "remote": 1
+    }
+  }
+}
