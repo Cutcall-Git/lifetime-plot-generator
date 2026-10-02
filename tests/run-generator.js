@@ -53,7 +53,10 @@ const counts = {
   maleRelationship: new Map(),
   season: new Map(),
   protagonistSecondaries: new Map(),
-  maleSecondaries: new Map()
+  maleSecondaries: new Map(),
+  friendRole: new Map(),
+  friendSex: new Map(),
+  friendOrientation: new Map()
 };
 
 function addCount(outcomes, outcome, amount = 1) {
@@ -74,12 +77,27 @@ function htmlToText(html) {
     .trim();
 }
 
+function countSecondaryLine(line, target) {
+  const outcomes = line.replace(/^[^:]+: /, "");
+  if (!outcomes) return;
+
+  for (const outcome of outcomes.split(", ")) {
+    const match = outcome.match(/^(\d+) (.+?)(s?)$/);
+    if (!match) throw new Error(`Unexpected secondary output: ${outcome}`);
+    addCount(target, match[2], Number(match[1]));
+  }
+}
+
 function countPlot(plot) {
   const lines = plot.split("\n");
   const protagonist = lines[0].match(/^Protagonist: female, (\d+), (.+)$/);
-  const maleCounterpart = lines[2].match(/^Male counterpart: (\d+), ([^,]+), (.+)$/);
+  const friendLine = lines.find(line => line.startsWith("Her friends:"));
+  const maleLine = lines.find(line => line.startsWith("Male counterpart:"));
+  const responsibilityLine = lines.find(line => line.startsWith("His responsibility:"));
+  const seasonLine = lines.find(line => line.startsWith("Season:"));
+  const maleCounterpart = maleLine?.match(/^Male counterpart: (\d+), ([^,]+), (.+)$/);
 
-  if (!protagonist || !maleCounterpart) {
+  if (!protagonist || !maleCounterpart || !responsibilityLine || !seasonLine) {
     throw new Error(`Unexpected plot output:\n${plot}`);
   }
 
@@ -87,22 +105,18 @@ function countPlot(plot) {
   addCount(counts.protagonistRelationship, protagonist[2]);
   addCount(counts.maleAgeRelation, maleCounterpart[2]);
   addCount(counts.maleRelationship, maleCounterpart[3]);
-  addCount(counts.season, lines[4].replace("Season: ", ""));
+  addCount(counts.season, seasonLine.replace("Season: ", ""));
 
-  for (const line of [lines[1], lines[3]]) {
-    const outcomes = line.replace(/^[^:]+: /, "");
+  countSecondaryLine(lines[1], counts.protagonistSecondaries);
+  countSecondaryLine(responsibilityLine, counts.maleSecondaries);
 
-    if (!outcomes) continue;
-
-    for (const outcome of outcomes.split(", ")) {
-      const match = outcome.match(/^(\d+) (.+?)(s?)$/);
-
-      if (!match) throw new Error(`Unexpected secondary output: ${outcome}`);
-
-      const target = line.startsWith("Her people:")
-        ? counts.protagonistSecondaries
-        : counts.maleSecondaries;
-      addCount(target, match[2], Number(match[1]));
+  if (friendLine) {
+    for (const friend of friendLine.replace("Her friends: ", "").split(", ")) {
+      const match = friend.match(/^(gay|straight) (male|female) (.+)$/);
+      if (!match) throw new Error(`Unexpected friend output: ${friend}`);
+      addCount(counts.friendOrientation, match[1]);
+      addCount(counts.friendSex, match[2]);
+      addCount(counts.friendRole, match[3]);
     }
   }
 }
@@ -130,6 +144,9 @@ async function run() {
     formatCounts("Seasons", counts.season),
     formatCounts("Protagonist secondary characters", counts.protagonistSecondaries),
     formatCounts("Male secondary characters", counts.maleSecondaries),
+    formatCounts("Friend roles", counts.friendRole),
+    formatCounts("Friend sex", counts.friendSex),
+    formatCounts("Friend orientation", counts.friendOrientation),
     "",
     "Generated plots",
     plots.join("\n\n"),
