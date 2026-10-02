@@ -36,10 +36,25 @@ function generateSecondaries(schema) {
   return counts;
 }
 
+function generateFriends(count, schema) {
+  return Array.from({ length: count }, () => {
+    const role = pick(schema.roles);
+    const sex = pick(schema.sex);
+    const orientation = pick(schema.orientation[sex]);
+    return { role, sex, orientation };
+  });
+}
+
 function describeSecondaries(counts) {
   return Object.entries(counts)
     .filter(([, count]) => count)
     .map(([type, count]) => `${count} ${type.replaceAll("_", " ")}${count > 1 ? "s" : ""}`)
+    .join(", ");
+}
+
+function describeFriends(friends) {
+  return friends
+    .map(friend => `${friend.orientation} ${friend.sex} ${friend.role.replaceAll("_", " ")}`)
     .join(", ");
 }
 
@@ -58,11 +73,13 @@ async function generateMovie() {
   const maleRelationship = pick(primitives.relationship);
 
   const protagonistSecondaries = generateSecondaries(secondary.protagonist);
+  const friends = generateFriends(protagonistSecondaries.friend, secondary.friend);
   const maleSecondaries = generateSecondaries(secondary.male_counterpart);
 
   movie.innerHTML = `
     <p><strong>Protagonist:</strong> female, ${protagonistAge}, ${protagonistRelationship.replaceAll("_", " ")}</p>
     <p><strong>Her people:</strong> ${describeSecondaries(protagonistSecondaries)}</p>
+    ${friends.length ? `<p><strong>Her friends:</strong> ${describeFriends(friends)}</p>` : ""}
     <p><strong>Male counterpart:</strong> ${maleAge}, ${relation.replaceAll("_", " ")}, ${maleRelationship.replaceAll("_", " ")}</p>
     <p><strong>His responsibility:</strong> ${describeSecondaries(maleSecondaries)}</p>
     <p><strong>Season:</strong> ${season.replaceAll("_", " ")}</p>
